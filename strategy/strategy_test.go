@@ -1,6 +1,7 @@
 package strategy
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -246,7 +247,7 @@ func TestResultStruct(t *testing.T) {
 		DirectAnswer: "",
 		Chunks:       chunks,
 		Trace: RetrievalTrace{
-			Strategy: "vector",
+			Strategy:    "vector",
 			ChunksCount: 2,
 		},
 	}
@@ -329,5 +330,7 @@ func TestStrategyInterfaceContract(t *testing.T) {
 // TestMockStrategy implements Strategy for interface testing.
 type TestMockStrategy struct{}
 
-func (m *TestMockStrategy) Name() string                       { return "test" }
-func (m *TestMockStrategy) Retrieve(context interface{}, q Query) (*Result, error) { return nil, nil }
+func (m *TestMockStrategy) Name() string { return "test" }
+func (m *TestMockStrategy) Retrieve(ctx context.Context, q Query) (*Result, error) {
+	return nil, nil
+}

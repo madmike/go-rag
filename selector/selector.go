@@ -31,7 +31,12 @@ func NewSelector(defaultStr strategy.Strategy) *Selector {
 
 // AddCondition adds an expr condition to the selector.
 func (s *Selector) AddCondition(evalString string, strat strategy.Strategy) error {
-	program, err := expr.Compile(evalString, expr.Env(map[string]interface{}{}))
+	program, err := expr.Compile(evalString, expr.Env(map[string]interface{}{
+		"query":           "",
+		"history_length":  0,
+		"tenant_id":       "",
+		"tenant_agent_id": "",
+	}))
 	if err != nil {
 		return fmt.Errorf("failed to compile condition '%s': %w", evalString, err)
 	}

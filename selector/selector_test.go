@@ -32,7 +32,7 @@ func TestSelectorAddCondition(t *testing.T) {
 	selector := NewSelector(defaultStrat)
 
 	strategy := &MockStrategy{name_: "vector"}
-	err := selector.AddCondition("len(history) < 5", strategy)
+	err := selector.AddCondition("history_length < 5", strategy)
 	require.NoError(t, err)
 	require.Equal(t, 1, len(selector.conditions))
 }
@@ -51,13 +51,13 @@ func TestSelectorAddConditionInvalidExpr(t *testing.T) {
 
 // TestSelectorSelectFirstMatch returns first matching strategy.
 func TestSelectorSelectFirstMatch(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
+	defaultStrategy := &MockStrategy{name_: "default"}
 	vector := &MockStrategy{name_: "vector"}
 	hybrid := &MockStrategy{name_: "hybrid"}
 
-	selector := NewSelector(default)
-	selector.AddCondition("len(history) > 0", vector)
-	selector.AddCondition("len(history) > 5", hybrid)
+	selector := NewSelector(defaultStrategy)
+	selector.AddCondition("history_length > 0", vector)
+	selector.AddCondition("history_length > 5", hybrid)
 
 	// With 3 history items, first condition matches
 	query := strategy.Query{
@@ -76,8 +76,8 @@ func TestSelectorSelectFirstMatch(t *testing.T) {
 
 // TestSelectorSelectDefault returns default when no condition matches.
 func TestSelectorSelectDefault(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
-	selector := NewSelector(default)
+	defaultStrategy := &MockStrategy{name_: "default"}
+	selector := NewSelector(defaultStrategy)
 
 	// Add a condition that won't match
 	selector.AddCondition("len(history) > 100", &MockStrategy{name_: "hybrid"})
@@ -90,14 +90,14 @@ func TestSelectorSelectDefault(t *testing.T) {
 
 // TestSelectorSelectOrderMatters conditions are evaluated in order.
 func TestSelectorSelectOrderMatters(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
+	defaultStrategy := &MockStrategy{name_: "default"}
 	strat1 := &MockStrategy{name_: "strategy1"}
 	strat2 := &MockStrategy{name_: "strategy2"}
 
-	selector := NewSelector(default)
+	selector := NewSelector(defaultStrategy)
 	// Both conditions will match, but first one should be chosen
-	selector.AddCondition("len(history) >= 0", strat1)
-	selector.AddCondition("len(history) >= 0", strat2)
+	selector.AddCondition("history_length >= 0", strat1)
+	selector.AddCondition("history_length >= 0", strat2)
 
 	query := strategy.Query{UserText: "test"}
 	result, err := selector.Select(context.Background(), query)
@@ -107,9 +107,9 @@ func TestSelectorSelectOrderMatters(t *testing.T) {
 
 // TestSelectorConditionWithTenantID uses tenant_id in expression.
 func TestSelectorConditionWithTenantID(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
+	defaultStrategy := &MockStrategy{name_: "default"}
 	premium := &MockStrategy{name_: "premium"}
-	selector := NewSelector(default)
+	selector := NewSelector(defaultStrategy)
 
 	selector.AddCondition("tenant_id == 'premium-tenant'", premium)
 
@@ -124,9 +124,9 @@ func TestSelectorConditionWithTenantID(t *testing.T) {
 
 // TestSelectorConditionWithHistoryLength conditions on history size.
 func TestSelectorConditionWithHistoryLength(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
+	defaultStrategy := &MockStrategy{name_: "default"}
 	multiquery := &MockStrategy{name_: "multiquery"}
-	selector := NewSelector(default)
+	selector := NewSelector(defaultStrategy)
 
 	selector.AddCondition("history_length >= 3", multiquery)
 
@@ -155,23 +155,24 @@ func TestSelectorConditionWithHistoryLength(t *testing.T) {
 
 // TestSelectorConditionWithQueryText uses user query text.
 func TestSelectorConditionWithQueryText(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
+	defaultStrategy := &MockStrategy{name_: "default"}
 	faq := &MockStrategy{name_: "faq"}
-	selector := NewSelector(default)
+	selector := NewSelector(defaultStrategy)
 
 	// Simple keyword check
-	selector.AddCondition("contains(query, 'how')", faq)
+	selector.AddCondition("query == 'how do I configure X'", faq)
 
 	query := strategy.Query{UserText: "how do I configure X"}
 	result, err := selector.Select(context.Background(), query)
 	require.NoError(t, err)
+	require.Equal(t, "faq", result.Name())
 	// Note: contains() might not be available; this tests the pattern
 }
 
 // TestSelectorConditionEvaluationError continues on error.
 func TestSelectorConditionEvaluationError(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
-	selector := NewSelector(default)
+	defaultStrategy := &MockStrategy{name_: "default"}
+	selector := NewSelector(defaultStrategy)
 
 	// Invalid condition that references non-existent field
 	selector.AddCondition("nonexistent_field > 5", &MockStrategy{name_: "should-skip"})
@@ -186,15 +187,15 @@ func TestSelectorConditionEvaluationError(t *testing.T) {
 
 // TestSelectorMultipleConditionsComplex tests multiple conditions.
 func TestSelectorMultipleConditionsComplex(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
+	defaultStrategy := &MockStrategy{name_: "default"}
 	vector := &MockStrategy{name_: "vector"}
 	hybrid := &MockStrategy{name_: "hybrid"}
 	hyde := &MockStrategy{name_: "hyde"}
 
-	selector := NewSelector(default)
-	selector.AddCondition("len(history) == 0", vector)
-	selector.AddCondition("len(history) > 0 && len(history) < 5", hybrid)
-	selector.AddCondition("len(history) >= 5", hyde)
+	selector := NewSelector(defaultStrategy)
+	selector.AddCondition("history_length == 0", vector)
+	selector.AddCondition("history_length > 0 && history_length < 5", hybrid)
+	selector.AddCondition("history_length >= 5", hyde)
 
 	// Test each branch
 	tests := []struct {
@@ -225,9 +226,9 @@ func TestSelectorMultipleConditionsComplex(t *testing.T) {
 
 // TestSelectorWithTenantAgentID uses tenant_agent_id in condition.
 func TestSelectorWithTenantAgentID(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
+	defaultStrategy := &MockStrategy{name_: "default"}
 	special := &MockStrategy{name_: "special"}
-	selector := NewSelector(default)
+	selector := NewSelector(defaultStrategy)
 
 	selector.AddCondition("tenant_agent_id == 'agent-123'", special)
 
@@ -242,8 +243,8 @@ func TestSelectorWithTenantAgentID(t *testing.T) {
 
 // TestNewSelectorDefaults ensures default strategy is set.
 func TestNewSelectorDefaults(t *testing.T) {
-	default := &MockStrategy{name_: "default"}
-	selector := NewSelector(default)
+	defaultStrategy := &MockStrategy{name_: "default"}
+	selector := NewSelector(defaultStrategy)
 
 	require.NotNil(t, selector.defaultStr)
 	require.Equal(t, "default", selector.defaultStr.Name())

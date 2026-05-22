@@ -122,7 +122,7 @@ func TestInMemoryCacheConcurrentAccess(t *testing.T) {
 
 // TestRedisCacheGet retrieves value from Redis.
 func TestRedisCacheGet(t *testing.T) {
-	mr := miniredis.NewMiniredis()
+	mr := miniredis.NewMiniRedis()
 	require.NoError(t, mr.Start())
 	defer mr.Close()
 
@@ -140,7 +140,7 @@ func TestRedisCacheGet(t *testing.T) {
 
 // TestRedisCacheGetMiss handles missing keys.
 func TestRedisCacheGetMiss(t *testing.T) {
-	mr := miniredis.NewMiniredis()
+	mr := miniredis.NewMiniRedis()
 	require.NoError(t, mr.Start())
 	defer mr.Close()
 
@@ -155,7 +155,7 @@ func TestRedisCacheGetMiss(t *testing.T) {
 
 // TestRedisCacheSetWithTTL respects TTL.
 func TestRedisCacheSetWithTTL(t *testing.T) {
-	mr := miniredis.NewMiniredis()
+	mr := miniredis.NewMiniRedis()
 	require.NoError(t, mr.Start())
 	defer mr.Close()
 
@@ -177,7 +177,7 @@ func TestRedisCacheSetWithTTL(t *testing.T) {
 
 // TestRedisCacheDefaultTTL uses default when not specified.
 func TestRedisCacheDefaultTTL(t *testing.T) {
-	mr := miniredis.NewMiniredis()
+	mr := miniredis.NewMiniRedis()
 	require.NoError(t, mr.Start())
 	defer mr.Close()
 
@@ -196,7 +196,7 @@ func TestRedisCacheDefaultTTL(t *testing.T) {
 
 // TestRedisCacheCustomPrefix uses custom prefix.
 func TestRedisCacheCustomPrefix(t *testing.T) {
-	mr := miniredis.NewMiniredis()
+	mr := miniredis.NewMiniRedis()
 	require.NoError(t, mr.Start())
 	defer mr.Close()
 
@@ -214,7 +214,7 @@ func TestRedisCacheCustomPrefix(t *testing.T) {
 
 // TestRedisCacheDefaultPrefix uses default prefix when empty.
 func TestRedisCacheDefaultPrefix(t *testing.T) {
-	mr := miniredis.NewMiniredis()
+	mr := miniredis.NewMiniRedis()
 	require.NoError(t, mr.Start())
 	defer mr.Close()
 
