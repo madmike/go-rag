@@ -56,8 +56,8 @@ func TestSelectorSelectFirstMatch(t *testing.T) {
 	hybrid := &MockStrategy{name_: "hybrid"}
 
 	selector := NewSelector(defaultStrategy)
-	selector.AddCondition("history_length > 0", vector)
-	selector.AddCondition("history_length > 5", hybrid)
+	_ = selector.AddCondition("history_length > 0", vector)
+	_ = selector.AddCondition("history_length > 5", hybrid)
 
 	// With 3 history items, first condition matches
 	query := strategy.Query{
@@ -80,7 +80,7 @@ func TestSelectorSelectDefault(t *testing.T) {
 	selector := NewSelector(defaultStrategy)
 
 	// Add a condition that won't match
-	selector.AddCondition("len(history) > 100", &MockStrategy{name_: "hybrid"})
+	_ = selector.AddCondition("len(history) > 100", &MockStrategy{name_: "hybrid"})
 
 	query := strategy.Query{UserText: "test"}
 	result, err := selector.Select(context.Background(), query)
@@ -96,8 +96,8 @@ func TestSelectorSelectOrderMatters(t *testing.T) {
 
 	selector := NewSelector(defaultStrategy)
 	// Both conditions will match, but first one should be chosen
-	selector.AddCondition("history_length >= 0", strat1)
-	selector.AddCondition("history_length >= 0", strat2)
+	_ = selector.AddCondition("history_length >= 0", strat1)
+	_ = selector.AddCondition("history_length >= 0", strat2)
 
 	query := strategy.Query{UserText: "test"}
 	result, err := selector.Select(context.Background(), query)
@@ -111,7 +111,7 @@ func TestSelectorConditionWithTenantID(t *testing.T) {
 	premium := &MockStrategy{name_: "premium"}
 	selector := NewSelector(defaultStrategy)
 
-	selector.AddCondition("tenant_id == 'premium-tenant'", premium)
+	_ = selector.AddCondition("tenant_id == 'premium-tenant'", premium)
 
 	query := strategy.Query{
 		UserText: "test",
@@ -128,7 +128,7 @@ func TestSelectorConditionWithHistoryLength(t *testing.T) {
 	multiquery := &MockStrategy{name_: "multiquery"}
 	selector := NewSelector(defaultStrategy)
 
-	selector.AddCondition("history_length >= 3", multiquery)
+	_ = selector.AddCondition("history_length >= 3", multiquery)
 
 	// Short history
 	query := strategy.Query{
@@ -160,7 +160,7 @@ func TestSelectorConditionWithQueryText(t *testing.T) {
 	selector := NewSelector(defaultStrategy)
 
 	// Simple keyword check
-	selector.AddCondition("query == 'how do I configure X'", faq)
+	_ = selector.AddCondition("query == 'how do I configure X'", faq)
 
 	query := strategy.Query{UserText: "how do I configure X"}
 	result, err := selector.Select(context.Background(), query)
@@ -175,8 +175,8 @@ func TestSelectorConditionEvaluationError(t *testing.T) {
 	selector := NewSelector(defaultStrategy)
 
 	// Invalid condition that references non-existent field
-	selector.AddCondition("nonexistent_field > 5", &MockStrategy{name_: "should-skip"})
-	selector.AddCondition("true", &MockStrategy{name_: "fallback"})
+	_ = selector.AddCondition("nonexistent_field > 5", &MockStrategy{name_: "should-skip"})
+	_ = selector.AddCondition("true", &MockStrategy{name_: "fallback"})
 
 	query := strategy.Query{UserText: "test"}
 	result, err := selector.Select(context.Background(), query)
@@ -193,9 +193,9 @@ func TestSelectorMultipleConditionsComplex(t *testing.T) {
 	hyde := &MockStrategy{name_: "hyde"}
 
 	selector := NewSelector(defaultStrategy)
-	selector.AddCondition("history_length == 0", vector)
-	selector.AddCondition("history_length > 0 && history_length < 5", hybrid)
-	selector.AddCondition("history_length >= 5", hyde)
+	_ = selector.AddCondition("history_length == 0", vector)
+	_ = selector.AddCondition("history_length > 0 && history_length < 5", hybrid)
+	_ = selector.AddCondition("history_length >= 5", hyde)
 
 	// Test each branch
 	tests := []struct {
@@ -230,7 +230,7 @@ func TestSelectorWithTenantAgentID(t *testing.T) {
 	special := &MockStrategy{name_: "special"}
 	selector := NewSelector(defaultStrategy)
 
-	selector.AddCondition("tenant_agent_id == 'agent-123'", special)
+	_ = selector.AddCondition("tenant_agent_id == 'agent-123'", special)
 
 	query := strategy.Query{
 		UserText:      "test",

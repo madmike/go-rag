@@ -104,7 +104,7 @@ func TestInMemoryCacheNegativeSize(t *testing.T) {
 // TestInMemoryCacheConcurrentAccess tests thread-safe reads.
 func TestInMemoryCacheConcurrentAccess(t *testing.T) {
 	cache := NewInMemoryDirectAnswerCache(1000)
-	cache.Set(context.Background(), "shared", "answer", 1*time.Hour)
+	_ = cache.Set(context.Background(), "shared", "answer", 1*time.Hour)
 
 	results := make(chan bool, 10)
 
@@ -227,7 +227,7 @@ func TestRedisCacheDefaultPrefix(t *testing.T) {
 // TestTieredCacheL1Hit returns from L1.
 func TestTieredCacheL1Hit(t *testing.T) {
 	l1 := NewInMemoryDirectAnswerCache(100)
-	l1.Set(context.Background(), "key1", "answer1", 1*time.Hour)
+	_ = l1.Set(context.Background(), "key1", "answer1", 1*time.Hour)
 
 	tiered := NewTieredDirectAnswerCache(l1, nil, 1*time.Hour)
 
@@ -241,7 +241,7 @@ func TestTieredCacheL1Hit(t *testing.T) {
 func TestTieredCacheL2Hit(t *testing.T) {
 	l1 := NewInMemoryDirectAnswerCache(100)
 	l2 := NewInMemoryDirectAnswerCache(100)
-	l2.Set(context.Background(), "key1", "answer1", 1*time.Hour)
+	_ = l2.Set(context.Background(), "key1", "answer1", 1*time.Hour)
 
 	tiered := NewTieredDirectAnswerCache(l1, l2, 1*time.Hour)
 
@@ -273,7 +273,7 @@ func TestTieredCacheMiss(t *testing.T) {
 // TestTieredCacheL1OnlyHit uses L1 only when L2 nil.
 func TestTieredCacheL1OnlyHit(t *testing.T) {
 	l1 := NewInMemoryDirectAnswerCache(100)
-	l1.Set(context.Background(), "key1", "answer1", 1*time.Hour)
+	_ = l1.Set(context.Background(), "key1", "answer1", 1*time.Hour)
 
 	tiered := NewTieredDirectAnswerCache(l1, nil, 1*time.Hour)
 
@@ -323,7 +323,7 @@ func TestTieredCacheDefaultTTL(t *testing.T) {
 // TestTieredCacheGetWithTierL1.
 func TestTieredCacheGetWithTierL1(t *testing.T) {
 	l1 := NewInMemoryDirectAnswerCache(100)
-	l1.Set(context.Background(), "key1", "answer1", 1*time.Hour)
+	_ = l1.Set(context.Background(), "key1", "answer1", 1*time.Hour)
 
 	tiered := NewTieredDirectAnswerCache(l1, nil, 1*time.Hour)
 
@@ -337,7 +337,7 @@ func TestTieredCacheGetWithTierL1(t *testing.T) {
 func TestTieredCacheGetWithTierL2(t *testing.T) {
 	l1 := NewInMemoryDirectAnswerCache(100)
 	l2 := NewInMemoryDirectAnswerCache(100)
-	l2.Set(context.Background(), "key1", "answer1", 1*time.Hour)
+	_ = l2.Set(context.Background(), "key1", "answer1", 1*time.Hour)
 
 	tiered := NewTieredDirectAnswerCache(l1, l2, 1*time.Hour)
 
@@ -363,7 +363,7 @@ func TestTieredCacheGetWithTierMiss(t *testing.T) {
 // TestTieredCacheNilL1.
 func TestTieredCacheNilL1(t *testing.T) {
 	l2 := NewInMemoryDirectAnswerCache(100)
-	l2.Set(context.Background(), "key1", "answer1", 1*time.Hour)
+	_ = l2.Set(context.Background(), "key1", "answer1", 1*time.Hour)
 
 	tiered := NewTieredDirectAnswerCache(nil, l2, 1*time.Hour)
 
